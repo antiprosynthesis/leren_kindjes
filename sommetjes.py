@@ -1,9 +1,7 @@
-import os
 import operator
 import platform
 import random
 import subprocess
-import sys
 
 def speak(text, wait=True, alsoPrint=True):
     if alsoPrint:
