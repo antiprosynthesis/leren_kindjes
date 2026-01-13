@@ -7,6 +7,8 @@ def speak(text, wait=True, alsoPrint=True):
     if alsoPrint:
         print(text, end="", flush=True)
     text = text.replace(" - ", " min ") # hack
+    text = text.replace(" x ", " maal ") # hack
+    text = text.replace(" : ", " gedeeld door ") # hack
     system = platform.system()
     if system == "Darwin":
         proc = subprocess.Popen(["say", "-v", "Xander", text])
@@ -15,19 +17,31 @@ def speak(text, wait=True, alsoPrint=True):
     if proc and wait:
         proc.wait()
 
+ops = [operator.add, operator.sub, operator.mul, operator.floordiv]
+op_names = ["+", "-", "x", ":"]
+
 print("\033[2J\033[H", end="") # clear
 speak("Wat is je naam? ")
 name = input()
 speak(f"\nDag, {name}!\n\nLaten we sommetjes oplossen!\n\n")
 while True:
+    op_i = random.randint(0, len(ops) - 1)
+    op = ops[op_i]
+    op_name = op_names[op_i]
     while True:
-        a = random.randint(0, 10)
-        b = random.randint(0, 10)
-        op = operator.add if random.randint(0, 1) == 0 else operator.sub
-        if op(a, b) >= 0 and op(a, b) <= 10:
+        if op == operator.mul:
+            a = random.randint(0, 10)
+            b = random.randint(0, 10)
+        elif op == operator.floordiv:
+            b = random.randint(1, 10)
+            a = random.randint(0, 10)*b
+        else:
+            a = random.randint(0, 100)
+            b = random.randint(0, 100)
+        if op(a, b) >= 0:
             break
     while True:
-        speak(f"{a} {"+" if op == operator.add else "-"} {b} = ")
+        speak(f"{a} {op_name} {b} = ")
         c = input()
         try:
             c = int(c)
@@ -36,8 +50,7 @@ while True:
             continue
         if op(a, b) == c:
             print()
-            speak(f"{a} {"+" if op == operator.add else "-"} {b} = {c}.", alsoPrint=False)
-            speak(f"Goed zo, {name}!\n\n")
+            speak(f"{c}", alsoPrint=False)
             break
         else:
             speak("\nFout! Probeer opnieuw.\n\n")
