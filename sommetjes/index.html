@@ -23,60 +23,37 @@
             padding: 0 1rem;
         }
 
-        /* Mobiele aanpassingen */
-        @media (max-width: 600px) {
-            body {
-                align-items: flex-start;
-                padding-top: 15vh;
-            }
-            .container {
-                gap: 3rem; /* Iets compacter op mobiel */
-            }
-        }
-
-        /* Desktop aanpassingen */
-        @media (min-width: 601px) {
-            body {
-                align-items: center;
-            }
-            .container {
-                gap: 10rem; 
-                /* Trek de container iets omhoog zodat het sommetje (bovenste element) 
-                   beter gecentreerd lijkt ten opzichte van de hele pagina */
-                margin-top: 5rem; 
-            }
-        }
-
+        /* ALGEMENE STIJLEN */
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
         }
 
         .sum-line {
             display: flex;
             align-items: baseline;
-            /* Terug naar 12vw voor maximale leesbaarheid, met een iets kleinere container focus */
+            /* Gebruik gap voor exact dezelfde ruimte tussen de elementen */
+            gap: 1ch; 
             font-size: clamp(2rem, 12vw, 5rem);
-            width: 100%;
             justify-content: center;
+            width: 100%;
         }
 
-        #sum {
-            display: inline-block;
-            text-align: right;
-            width: 10ch; /* Verbreed naar 10 karakters voor sommen tot 20 */
+        #sum-display {
             white-space: pre;
+            text-align: right;
+            /* Zorg dat de som altijd op dezelfde plek eindigt */
+            min-width: 10ch; 
         }
 
         .input-wrapper {
             display: inline-flex;
             align-items: baseline;
             position: relative;
-            width: 3ch; 
-            margin-left: 0.6ch; /* Iets verkleind voor een betere balans */
+            min-width: 3ch;
         }
 
         #display-text {
@@ -103,6 +80,11 @@
             margin-left: 2px;
         }
 
+        /* Verberg cursor als de input geblokkeerd is */
+        .locked .cursor {
+            display: none;
+        }
+
         @keyframes blink {
             from, to { opacity: 1; }
             50% { opacity: 0; }
@@ -115,23 +97,55 @@
             text-transform: uppercase;
             opacity: 0.8;
             text-align: center;
-            width: 100%;
-            padding: 0 1rem;
         }
 
-        /* Hide arrows in number input */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start;
+                padding-top: 15vh;
+            }
+            .container {
+                gap: 4rem;
+            }
+        }
+
+        @media (min-width: 601px) {
+            body {
+                align-items: center;
+            }
+            .container {
+                position: relative;
+                transform: translateY(-5vh);
+                gap: 8rem;
+            }
+            .sum-line {
+                font-size: 10rem;
+                /* Grotere gap op desktop voor de grote letters */
+                gap: 1ch; 
+                /* Subtiele verschuiving naar links voor balans met het antwoord */
+                transform: translateX(-0.5ch);
+            }
+            .feedback {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                margin-top: 5rem;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="sum-line">
-            <span id="sum">? + ? =</span>
+            <span id="sum-display">? + ? =</span>
             <div class="input-wrapper">
                 <span id="display-text"></span><span class="cursor"></span>
                 <input type="number" id="answer" autofocus autocomplete="off">
@@ -141,55 +155,25 @@
     </div>
 
     <script>
-        const sumElement = document.getElementById('sum');
+        const sumDisplay = document.getElementById('sum-display');
         const answerInput = document.getElementById('answer');
         const displayText = document.getElementById('display-text');
         const feedbackElement = document.getElementById('feedback');
 
         const correctMessages = [
-            "Keigoed!",
-            "Zot gedaan!",
-            "Gij zijt een krak!",
-            "Amai, gij kunt dat goed!",
-            "Ferm gewerkt!",
-            "Schitterend!",
-            "Hoera! Gij zijt de beste.",
-            "Wauw, echt knap!",
-            "Klasse!",
-            "Heel goed!",
-            "Zalig!",
-            "Top gedaan!",
-            "Super!",
-            "Goe bezig!",
-            "Ongelooflijk!",
-            "Fantastisch!",
-            "Jij bent een ster!",
-            "Prachtig!",
-            "Wijs!",
-            "Echt chapeau!"
+            "Keigoed!", "Zot gedaan!", "Gij zijt een krak!", "Amai, gij kunt dat goed!",
+            "Ferm gewerkt!", "Schitterend!", "Hoera! Gij zijt de beste.", "Wauw, echt knap!",
+            "Klasse!", "Heel goed!", "Zalig!", "Top gedaan!", "Super!", "Goe bezig!",
+            "Ongelooflijk!", "Fantastisch!", "Jij bent een ster!", "Prachtig!", "Wijs!", "Echt chapeau!"
         ];
 
         const incorrectMessages = [
-            "Oepsie, probeer nog eens!",
-            "Lap, dat was 'm niet!",
-            "Niet opgeven!",
-            "Nog een keertje proberen?",
-            "Kieken! Dat is niet juist.",
-            "Bijna!",
-            "Amai, dat was een moeilijke!",
-            "Jammer, nog ne keer!",
-            "Oei oei oei!",
-            "Nog ne keer!",
-            "Mis poes!",
-            "Niet juist, snotneusje!",
-            "Helaas!",
-            "Probeer het nog een keer.",
-            "Blijven oefenen!",
-            "Ge kunt het wel!",
-            "Euh... nee.",
-            "Zit ge te dromen?",
-            "Oeps, foutje!",
-            "Nog een poging!"
+            "Oepsie, probeer nog eens!", "Lap, dat was 'm niet!", "Niet opgeven!",
+            "Nog een keertje proberen?", "Kieken! Dat is niet juist.", "Bijna!",
+            "Amai, dat was een moeilijke!", "Jammer, nog ne keer!", "Oei oei oei!",
+            "Nog ne keer!", "Mis poes!", "Niet juist, snotneusje!", "Helaas!",
+            "Probeer het nog een keer.", "Blijven oefenen!", "Ge kunt het wel!",
+            "Euh... nee.", "Zit ge te dromen?", "Oeps, foutje!", "Nog een poging!"
         ];
 
         let currentResult = 0;
@@ -199,21 +183,24 @@
             let a, b, op;
 
             if (isPlus) {
-                // a + b = result, result <= 20
                 const result = Math.floor(Math.random() * 21);
                 a = Math.floor(Math.random() * (result + 1));
                 b = result - a;
                 op = '+';
                 currentResult = result;
             } else {
-                // a - b = result, a <= 20
                 a = Math.floor(Math.random() * 21);
                 b = Math.floor(Math.random() * (a + 1));
                 op = '-';
                 currentResult = a - b;
             }
 
-            sumElement.textContent = `${a} ${op} ${b} =`;
+            // Ontgrendel input
+            document.querySelector('.input-wrapper').classList.remove('locked');
+            answerInput.disabled = false;
+
+            // De som eindigt op een =, de gap van 1ch in de CSS zorgt voor de ruimte daarna
+            sumDisplay.textContent = `${a} ${op} ${b} =`;
             answerInput.value = '';
             displayText.textContent = '';
             feedbackElement.textContent = '';
@@ -221,17 +208,19 @@
         }
 
         answerInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
+            if (e.key === 'Enter' && !answerInput.disabled) checkAnswer();
         });
 
         answerInput.addEventListener('input', () => {
             displayText.textContent = answerInput.value;
         });
 
-        document.addEventListener('click', () => answerInput.focus());
-        document.addEventListener('keydown', () => answerInput.focus());
+        document.addEventListener('click', () => {
+            if (!answerInput.disabled) answerInput.focus();
+        });
+        document.addEventListener('keydown', () => {
+            if (!answerInput.disabled) answerInput.focus();
+        });
 
         function checkAnswer() {
             if (answerInput.value === '') return;
@@ -240,7 +229,11 @@
             if (val === currentResult) {
                 const msg = correctMessages[Math.floor(Math.random() * correctMessages.length)];
                 feedbackElement.textContent = msg;
-                // Langer laten staan zodat ze kan lezen (3 seconden)
+
+                // Vergrendel input tijdens pauze
+                document.querySelector('.input-wrapper').classList.add('locked');
+                answerInput.disabled = true;
+
                 setTimeout(generateSum, 3000);
             } else {
                 const msg = incorrectMessages[Math.floor(Math.random() * incorrectMessages.length)];
