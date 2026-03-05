@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sommetjes</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #dcdcdc;
+            --cursor-color: #ffffff;
+        }
+
+        body {
+            font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+            width: 100%;
+        }
+
+        .sum-line {
+            display: flex;
+            align-items: baseline;
+            font-size: 5rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        #sum {
+            display: inline-block;
+            text-align: right;
+            width: 8ch; /* Fixed width for "XX + XX =" to anchor it */
+            white-space: pre;
+        }
+
+        .input-wrapper {
+            display: inline-flex;
+            align-items: baseline;
+            position: relative;
+            width: 4ch; /* Fixed width for input area */
+            margin-left: 1ch;
+        }
+
+        #display-text {
+            white-space: pre;
+        }
+
+        input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px; /* Vertical bar cursor */
+            height: 0.8em;
+            background-color: var(--cursor-color);
+            animation: blink 1.2s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .feedback {
+            font-size: 3rem;
+            height: 4rem;
+            letter-spacing: 0.1rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        /* Hide arrows in number input */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sum-line">
+            <span id="sum">? + ? =</span>
+            <div class="input-wrapper">
+                <span id="display-text"></span><span class="cursor"></span>
+                <input type="number" id="answer" autofocus autocomplete="off">
+            </div>
+        </div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        const sumElement = document.getElementById('sum');
+        const answerInput = document.getElementById('answer');
+        const displayText = document.getElementById('display-text');
+        const feedbackElement = document.getElementById('feedback');
+
+        const correctMessages = [
+            "Keigoed!",
+            "Zot gedaan!",
+            "Gij zijt een krak!",
+            "Amai, gij kunt dat goed!",
+            "Ferm gewerkt!",
+            "Schitterend!",
+            "Hoera! Gij zijt de beste.",
+            "Wauw, echt knap!",
+            "Klasse!",
+            "Heel goed!",
+            "Zalig!",
+            "Top gedaan!",
+            "Super!",
+            "Goe bezig!",
+            "Ongelooflijk!",
+            "Fantastisch!",
+            "Jij bent een ster!",
+            "Prachtig!",
+            "Wijs!",
+            "Echt chapeau!"
+        ];
+
+        const incorrectMessages = [
+            "Oepsie, probeer nog eens!",
+            "Lap, dat was 'm niet!",
+            "Niet opgeven!",
+            "Nog een keertje proberen?",
+            "Kieken! Dat is niet juist.",
+            "Bijna!",
+            "Amai, dat was een moeilijke!",
+            "Jammer, nog ne keer!",
+            "Oei oei oei!",
+            "Nog ne keer!",
+            "Mis poes!",
+            "Niet juist, snotneusje!",
+            "Helaas!",
+            "Probeer het nog een keer.",
+            "Blijven oefenen!",
+            "Ge kunt het wel!",
+            "Euh... nee.",
+            "Zit ge te dromen?",
+            "Oeps, foutje!",
+            "Nog een poging!"
+        ];
+
+        let currentResult = 0;
+
+        function generateSum() {
+            const isPlus = Math.random() > 0.5;
+            let a, b, op;
+
+            if (isPlus) {
+                // a + b = result, result <= 20
+                const result = Math.floor(Math.random() * 21);
+                a = Math.floor(Math.random() * (result + 1));
+                b = result - a;
+                op = '+';
+                currentResult = result;
+            } else {
+                // a - b = result, a <= 20
+                a = Math.floor(Math.random() * 21);
+                b = Math.floor(Math.random() * (a + 1));
+                op = '-';
+                currentResult = a - b;
+            }
+
+            sumElement.textContent = `${a} ${op} ${b} =`;
+            answerInput.value = '';
+            displayText.textContent = '';
+            feedbackElement.textContent = '';
+            answerInput.focus();
+        }
+
+        answerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        answerInput.addEventListener('input', () => {
+            displayText.textContent = answerInput.value;
+        });
+
+        document.addEventListener('click', () => answerInput.focus());
+        document.addEventListener('keydown', () => answerInput.focus());
+
+        function checkAnswer() {
+            if (answerInput.value === '') return;
+            const val = parseInt(answerInput.value);
+
+            if (val === currentResult) {
+                const msg = correctMessages[Math.floor(Math.random() * correctMessages.length)];
+                feedbackElement.textContent = msg;
+                // Langer laten staan zodat ze kan lezen (3 seconden)
+                setTimeout(generateSum, 3000);
+            } else {
+                const msg = incorrectMessages[Math.floor(Math.random() * incorrectMessages.length)];
+                feedbackElement.textContent = msg;
+                answerInput.value = '';
+                displayText.textContent = '';
+                answerInput.focus();
+            }
+        }
+
+        generateSum();
+    </script>
+</body>
+</html>
