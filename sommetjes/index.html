@@ -36,8 +36,8 @@
         .sum-line {
             display: flex;
             align-items: baseline;
-            /* Iets groter (10vw) voor betere leesbaarheid op mobiel */
-            font-size: clamp(2rem, 10vw, 5rem);
+            /* Terug naar 12vw voor maximale leesbaarheid, met een iets kleinere container focus */
+            font-size: clamp(2rem, 12vw, 5rem);
             width: 100%;
             justify-content: center;
         }
@@ -45,7 +45,7 @@
         #sum {
             display: inline-block;
             text-align: right;
-            width: 8ch; 
+            width: 10ch; /* Verbreed naar 10 karakters voor sommen tot 20 */
             white-space: pre;
         }
 
@@ -54,7 +54,7 @@
             align-items: baseline;
             position: relative;
             width: 3ch; 
-            margin-left: 1ch; /* Teruggezet naar 1ch voor meer ruimte na de '=' */
+            margin-left: 1.5ch; /* Extra ruimte na de '=' voor duidelijkheid */
         }
 
         #display-text {
