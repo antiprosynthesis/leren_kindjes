@@ -36,8 +36,8 @@
         .sum-line {
             display: flex;
             align-items: baseline;
-            /* Gebruik viewport units zodat het schaalt met de schermbreedte */
-            font-size: clamp(2rem, 12vw, 5rem);
+            /* Iets kleiner gemaakt (8vw ipv 12vw) om 12+ karakters te laten passen op smalle schermen */
+            font-size: clamp(1.5rem, 8vw, 5rem);
             width: 100%;
             justify-content: center;
         }
@@ -53,8 +53,8 @@
             display: inline-flex;
             align-items: baseline;
             position: relative;
-            width: 3ch; /* Iets smaller gemaakt voor mobiel */
-            margin-left: 0.5ch;
+            width: 3ch; 
+            margin-left: 0.2ch; /* Nog wat compacter */
         }
 
         #display-text {
