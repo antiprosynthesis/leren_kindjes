@@ -21,20 +21,23 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            padding: 0 1rem; /* Marges aan de zijkanten */
         }
 
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3rem;
+            gap: 2rem;
             width: 100%;
+            max-width: 600px;
         }
 
         .sum-line {
             display: flex;
             align-items: baseline;
-            font-size: 5rem;
+            /* Gebruik viewport units zodat het schaalt met de schermbreedte */
+            font-size: clamp(2rem, 12vw, 5rem);
             width: 100%;
             justify-content: center;
         }
@@ -42,7 +45,7 @@
         #sum {
             display: inline-block;
             text-align: right;
-            width: 8ch; /* Fixed width for "XX + XX =" to anchor it */
+            width: 8ch; 
             white-space: pre;
         }
 
@@ -50,8 +53,8 @@
             display: inline-flex;
             align-items: baseline;
             position: relative;
-            width: 4ch; /* Fixed width for input area */
-            margin-left: 1ch;
+            width: 3ch; /* Iets smaller gemaakt voor mobiel */
+            margin-left: 0.5ch;
         }
 
         #display-text {
@@ -70,7 +73,7 @@
 
         .cursor {
             display: inline-block;
-            width: 2px; /* Vertical bar cursor */
+            width: 2px;
             height: 0.8em;
             background-color: var(--cursor-color);
             animation: blink 1.2s step-end infinite;
@@ -84,12 +87,14 @@
         }
 
         .feedback {
-            font-size: 3rem;
-            height: 4rem;
+            font-size: clamp(1.2rem, 6vw, 3rem);
+            min-height: 4rem;
             letter-spacing: 0.1rem;
             text-transform: uppercase;
             opacity: 0.8;
             text-align: center;
+            width: 100%;
+            padding: 0 1rem;
         }
 
         /* Hide arrows in number input */
